@@ -1,14 +1,14 @@
 {
   "name": "qb-flip-book",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "qb-flip-book",
   "keywords": [
     "qb-flip-book",
     "flip",
-    "book",
+    "flip effect",
+    "book effect",
     "pages",
-    "magazine"
+    "magazine effect"
   ],
   "license": "MIT",
   "author": {
@@ -19,7 +19,7 @@
     "type": "git",
     "url": "https://github.com/maqingbo/qb-flip-book.git"
   },
-  "homepage": "https://github.com/maqingbo/qb-flip-book#readme",
+  "homepage": "https://github.com/maqingbo/qb-flip-book",
   "bugs": {
     "url": "https://github.com/maqingbo/qb-flip-book/issues"
   },
@@ -31,8 +31,12 @@
   "module": "./dist/qb-flip-book.js",
   "types": "./index.d.ts",
   "exports": {
-    "types": "./index.d.ts",
-    "import": "./dist/qb-flip-book.js"
+    ".": {
+      "import": "./dist/qb-flip-book.js"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css"
+    }
   },
   "scripts": {
     "dev": "vite",

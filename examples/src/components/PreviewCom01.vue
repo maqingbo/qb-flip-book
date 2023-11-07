@@ -1,23 +1,168 @@
 <template>
-  <div ref="bookArea">{{ msg }}</div>
+  <div class="page-wrap">
+    <div :style="{ width: pageWidth * 2 + 30 + 16 + 'px', height: pageHeight + 9 + 'px' }"
+         class="book-wrap">
+      <div ref="bookArea"
+           class="book-area">
+        <div v-for="(img, i) in imgs"
+             :key="i"
+             class="book-page">
+          <img :src="img"
+               :alt="i">
+        </div>
+      </div>
+    </div>
+    <div class="book-control">
+      <div @click="toPrev"
+           style="margin-right: 20px;cursor: pointer;">prev</div>
+      <div @click="toNext"
+           style="margin-right: 20px;cursor: pointer;">next</div>
+      <div>
+        jump to
+        <input v-model="pageNum"
+               type="number"
+               min="0"
+               style="width: 50px;"
+               @keyup.enter="toPage" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-// import { PageFlip } from '../../../src/main.ts'
-import { PageFlip } from '../../../dist/qb-flip-book.js'
-import { ref } from 'vue'
+// https://nodlik.github.io/StPageFlip/
+import { PageFlip } from 'qb-flip-book'
+import 'qb-flip-book/dist/style.css'
+// import { PageFlip } from 'page-flip'
+import img01 from '@/assets/imgs/img (1).jpg'
+import img02 from '@/assets/imgs/img (2).jpg'
+import img03 from '@/assets/imgs/img (3).jpg'
+import img04 from '@/assets/imgs/img (4).jpg'
+import img05 from '@/assets/imgs/img (5).jpg'
+import img06 from '@/assets/imgs/img (6).jpg'
+import img07 from '@/assets/imgs/img (7).jpg'
+import img08 from '@/assets/imgs/img (8).jpg'
+import img09 from '@/assets/imgs/img (9).jpg'
+import img10 from '@/assets/imgs/img (10).jpg'
+import img11 from '@/assets/imgs/img (11).jpg'
+import img12 from '@/assets/imgs/img (12).jpg'
+import { nextTick } from 'vue'
 
-defineProps({
-  msg: String,
-})
-
+const imgs = [img01, img02, img03, img04, img05, img06, img07, img08, img09, img10, img11, img12]
 const bookArea = ref(null)
-const obj = new PageFlip(bookArea.value, {
-  width: 500,
-  height: 700,
-  showCover: false,
+const pageWidth = 500
+const pageHeight = 700
+const pageFlip = shallowRef(null)
+function init () {
+  pageFlip.value = new PageFlip(bookArea.value, {
+    width: pageWidth, // required parameter - base page width
+    height: pageHeight, // required parameter - base page height
+    showCover: false,
+    // MaxShadowOpacity: 1,
+    flippingTime: 400 // 翻转动画时间，单位毫秒
+  })
+  pageFlip.value.loadFromHTML(document.querySelectorAll('.book-page'))
+}
+function toPrev () {
+  pageFlip.value.flipPrev()
+}
+function toNext () {
+  pageFlip.value.flipNext()
+}
+const pageNum = ref(0)
+function toPage () {
+  nextTick(() => {
+    pageFlip.value.flip(pageNum.value)
+  })
+}
+
+onMounted(() => {
+  init()
 })
-console.log('%c PageFlip: ', 'background-color: pink', obj)
+onBeforeUnmount(() => { })
 </script>
 
-<style scoped lang="scss"></style>
+<style lang='scss' scoped>
+.page-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .book-wrap {
+    padding: 1px 15px;
+    background: repeating-linear-gradient(90deg, #fff, #e2e2e2 1px, #fff 3px, #9a9a9a 1px);
+    border-radius: 6px;
+    border: 4px solid #515378;
+    border-left-width: 8px;
+    border-right-width: 8px;
+  }
+
+  .book-area {
+    overflow: hidden;
+    box-sizing: border-box;
+    position: relative;
+    background-color: #fff;
+
+    .book-page {
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0px 0 20px 2px rgba(0, 0, 0, 0.3);
+      padding: 20px;
+
+      &:nth-child(2n) {
+        border-top-right-radius: 2px;
+        border-bottom-right-radius: 2px;
+
+        &::before {
+          content: '';
+          width: 30px;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          left: 0;
+          background: linear-gradient(to right, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 100%);
+          z-index: 2;
+          border-left: 1px solid #515378;
+        }
+      }
+
+      &:nth-child(2n + 1) {
+        border-top-left-radius: 2px;
+        border-bottom-left-radius: 2px;
+
+        &::before {
+          content: '';
+          width: 30px;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          right: 0;
+          background: linear-gradient(to left, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 100%);
+          z-index: 2;
+          border-right: 1px solid #515378;
+        }
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+
+  }
+
+  .book-control {
+    height: 32px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    color: var(--el-color-primary);
+  }
+}
+</style>
