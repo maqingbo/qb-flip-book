@@ -7,33 +7,49 @@
         <div v-for="(img, i) in imgs"
              :key="i"
              class="book-page">
-          <img :src="img"
-               :alt="i">
+          <div class="page-inner">
+            <div class="name">{{ img.name }}</div>
+            <div class="image-wrap">
+              <img :src="img.url"
+                   :alt="i">
+            </div>
+            <div class="page-num">{{ i + 1 }}-{{ imgs.length }}</div>
+          </div>
         </div>
       </div>
     </div>
     <div class="book-control">
-      <div @click="toPrev"
-           style="margin-right: 20px;cursor: pointer;">prev</div>
-      <div @click="toNext"
-           style="margin-right: 20px;cursor: pointer;">next</div>
+      <el-input placeholder="图件名称"
+                style="width: 200px;margin-right: 20px;"></el-input>
+      <el-icon @click="toPrev"
+               style="margin-right: 20px;cursor: pointer;">
+        <ArrowLeftBold />
+      </el-icon>
+      <el-icon @click="toNext"
+               style="margin-right: 20px;cursor: pointer;">
+        <ArrowRightBold />
+      </el-icon>
       <div>
-        jump to
-        <input v-model="pageNum"
-               type="number"
-               min="0"
-               style="width: 50px;"
-               @keyup.enter="toPage" />
+        跳转到
+        <el-input v-model="pageNum"
+                  type="number"
+                  min="0"
+                  style="width: 50px;"
+                  @keyup.enter="toPage"></el-input>
+        页
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-// https://nodlik.github.io/StPageFlip/
-import { PageFlip } from 'qb-flip-book'
-import 'qb-flip-book/dist/style.css'
-// import { PageFlip } from 'page-flip'
+// import { PageFlip } from 'qb-flip-book'
+// import 'qb-flip-book/dist/style.css'
+// 未打包
+import { PageFlip } from '../../../src/main'
+import '../../../src/Style/stPageFlip.css'
+
+import { ArrowLeftBold, ArrowRightBold } from '@element-plus/icons-vue'
 import img01 from '@/assets/imgs/img (1).jpg'
 import img02 from '@/assets/imgs/img (2).jpg'
 import img03 from '@/assets/imgs/img (3).jpg'
@@ -48,11 +64,11 @@ import img11 from '@/assets/imgs/img (11).jpg'
 import img12 from '@/assets/imgs/img (12).jpg'
 import { nextTick } from 'vue'
 
-const imgs = [img01, img02, img03, img04, img05, img06, img07, img08, img09, img10, img11, img12]
+const imgs = [{ url: img01, name: 'img01' }, { url: img02, name: 'img02' }, { url: img03, name: 'img03' }, { url: img04, name: 'img04' }, { url: img05, name: 'img05' }, { url: img06, name: 'img06' }, { url: img07, name: 'img07' }, { url: img08, name: 'img08' }, { url: img09, name: 'img09' }, { url: img10, name: 'img10' }, { url: img11, name: 'img11' }, { url: img12, name: 'img12' }]
 const bookArea = ref(null)
 const pageWidth = 500
 const pageHeight = 700
-const pageFlip = shallowRef(null)
+const pageFlip = ref(null)
 function init () {
   pageFlip.value = new PageFlip(bookArea.value, {
     width: pageWidth, // required parameter - base page width
@@ -72,7 +88,7 @@ function toNext () {
 const pageNum = ref(0)
 function toPage () {
   nextTick(() => {
-    pageFlip.value.flip(pageNum.value)
+    pageFlip.value.flip(Number(pageNum.value))
   })
 }
 
@@ -93,7 +109,7 @@ onBeforeUnmount(() => { })
 
   .book-wrap {
     padding: 1px 15px;
-    background: repeating-linear-gradient(90deg, #fff, #e2e2e2 1px, #fff 3px, #9a9a9a 1px);
+    background: repeating-linear-gradient(90deg, var(--el-bg-color), #e2e2e2 1px, var(--el-bg-color) 3px, #9a9a9a 1px);
     border-radius: 6px;
     border: 4px solid #515378;
     border-left-width: 8px;
@@ -107,10 +123,6 @@ onBeforeUnmount(() => { })
     background-color: #fff;
 
     .book-page {
-      display: flex;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
       box-shadow: inset 0px 0 20px 2px rgba(0, 0, 0, 0.3);
       padding: 20px;
 
@@ -148,13 +160,36 @@ onBeforeUnmount(() => { })
         }
       }
 
-      img {
+      .page-inner {
         width: 100%;
         height: 100%;
-        object-fit: contain;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+
+        .name {
+          font-size: 20px;
+        }
+
+        .image-wrap {
+          flex: 1;
+          height: 0;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+          }
+        }
+
+        .page-num {
+          text-align: center;
+          color: #777;
+        }
       }
     }
-
   }
 
   .book-control {
